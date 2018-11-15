@@ -5,6 +5,8 @@ We call for now :
     -Pres2 : analytical initial pressure field
     -R1 : cartesian repartition of the particles
     -R2 : cartesian repartion of the particles + random move
+    
+if p0 != 0 (background pressure) --> add in the theoretical solution
 """
 
 ####Packages to use
@@ -16,10 +18,11 @@ import matplotlib.pyplot as plt
 """B:TO CHANGE(0)"""
 nu = 0.01
 dt = 0.008
-wF = 1
+wF = 10
 L = 1
 psi =2*np.pi/L# 1/L#
 rho = 1000
+p0 = 1000 
 """E:TO CHANGE(0)"""
 
 # #Physical time consideres--Wrong cause adaptative time
@@ -109,20 +112,14 @@ def plot_graphics(name, abs_tab, ord_tab, label_tab, color_tab, xtitle, ytitle):
 
 ##Parameters
 """B:TO CHANGE(1)"""
-number_tab = np.arange(1, 4000, 50) #table of number of timesteps
+number_tab =  np.arange(1, 200, 1) #table of number of timesteps
 #For links towards results
-Root = "E:/Stage_EDF_Lab/TaylorGreenVortices/TG_Numerical_Test/Cas_test_4/"
-Case_1 = "TaylorGreenVortices2D_Pres1_R1_nu_10m2_p0_0"
-Case_1n = "Pres1_R1_nu_10m2_p0_0"
-Case_2 = "TaylorGreenVortices2D_Pres1_R1_nu_10m2_p0_10"
-Case_2n = "Pres1_R1_nu_10m2_p0_10"
-Case_3 = "TaylorGreenVortices2D_Pres1_R1_nu_10m2_p0_40"
-Case_3n = "Pres1_R1_nu_10m2_p0_40"
-Case_4 = "TaylorGreenVortices2D_Pres1_R1_nu_10m2_p0_1000"
-Case_4n = "Pres1_R1_nu_10m2_p0_1000"
+Root = "E:/Stage_EDF_Lab/TaylorGreenVortices/TG_Numerical_Test/TG_centered_pressure/FirstVersion/p0_"+str(p0)+"/no_shift/"
+Case_1 = "TaylorGreenVortices2D_p0_"+str(p0)+"_NoShift"
+Case_1n = "Pres1_R1_p0_"+str(p0)+"_NoShift"
 data = "press"
 
-nb_cases = 3
+nb_cases = 1
 
 """E:TO CHANGE(1)"""
 
@@ -173,10 +170,7 @@ for i in range(nb_cases+1):#cases + theory
 #table of times for each case
 #Link towards Sphynx timme used
 linkTime1 = Root+Case_1+"/timelog.txt"
-linkTime2 = Root+Case_2+"/timelog.txt"
-linkTime3 = Root+Case_3+"/timelog.txt"
-linkTime4 = Root+Case_4+"/timelog.txt"
-adresseTime_tab = [linkTime2, linkTime3, linkTime4]
+adresseTime_tab = [linkTime1]
 """E:TO CHANGE(2)"""
 
 
@@ -199,12 +193,8 @@ for number in number_tab:
     
     """B:TO CHANGE(3)""" 
     #Link towards Sphynx results###TOCHANGE
-    adresse1 = Root+Case_1+"/CSV_files/CSV_"+Case_1n+"_."+str(number)+".csv"
-    adresse2 = Root+Case_2+"/CSV_files/CSV_"+Case_2n+"_."+str(number)+".csv"
-    adresse3 = Root+Case_3+"/CSV_files/CSV_"+Case_3n+"_."+str(number)+".csv"
-    adresse4 = Root+Case_4+"/CSV_files/CSV_"+Case_4n+"_."+str(number)+".csv"
-    
-    adresse_tab = [adresse2, adresse3, adresse4]
+    adresse1 = Root+Case_1+"/CSV_files/"+Case_1n+"_."+str(number)+".csv" 
+    adresse_tab = [adresse1]
     """E:TO CHANGE(3)"""
     
     if (len(adresse_tab) != len(table_values)-1):
@@ -240,8 +230,12 @@ for time in theory_time:
             
     #theoretical values expected
     theory = table_values[-1]
-    theory[1].append(amplitude_th_f(data, time))
-    theory[2].append(-amplitude_th_f(data, time))
+    if (data == "press"):
+        theory[1].append(amplitude_th_f(data, time)+p0)
+        theory[2].append(-amplitude_th_f(data, time)+p0)
+    else :
+        theory[1].append(amplitude_th_f(data, time))
+        theory[2].append(-amplitude_th_f(data, time))
     theory[3].append(amplitude_th_f(data, time))
     theory[4].append(-gamma_f(data)*time)
     theory[5].append(-gamma_f(data))
@@ -256,8 +250,8 @@ time_tab_scaled = theory[5][-1] * np.array(table_times) #table of times scaled b
 
 """B:TO CHANGE(4)""" 
 #To change depending on the cases
-name_curves =  ["p0 = 10", "p0 = 40", "p0 = 1000"]
-color_curves = ["b.", "g.", "c."]
+name_curves =  ["p0 = "+str(p0)]
+color_curves = ["b."]
 """E:TO CHANGE(4)"""
 
 """B:TO CHANGE(5)""" 
